@@ -1,12 +1,8 @@
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait, Select
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
+
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 
@@ -17,7 +13,6 @@ def setup_browser_incognito():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=chrome_options)
     driver.maximize_window()
     return driver
-
 
 driver = setup_browser_incognito()
 
@@ -41,11 +36,22 @@ driver.find_element(By.XPATH, "//input[@id='postal-code']").send_keys("9005")
 driver.find_element(By.XPATH,"//input[@id='continue']").click()
 driver.find_element(By.XPATH,"//button[@id='finish']").click()
 time.sleep(2)
+
+# Assert BEFORE logout
+assert "thank you for your order" in driver.page_source.lower()
+print("Order Completed Successfully")
+
+
 driver.find_element(By.ID, "react-burger-menu-btn").click()
 time.sleep(2)
 driver.find_element(By.ID, "logout_sidebar_link").click()
 time.sleep(2)
 
-driver.quit()
+# Assert AFTER logout
+assert driver.find_element(By.ID, "login-button").is_displayed()
+print("Logout successful — user returned to login page.")
 
+
+
+driver.quit()
 
